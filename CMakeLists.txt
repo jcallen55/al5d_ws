@@ -19,7 +19,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# Create a library for the SSC-32U serial communication
+add_library(ssc32u_serial src/Ssc32uSerial.cpp)
+target_include_directories(ssc32u_serial PUBLIC ${CMAKE_SOURCE_DIR}/include/)
+
 add_executable(ssc32u_cli src/ssc32u_cli.cpp)
+target_link_libraries(ssc32u_cli PRIVATE ssc32u_serial)
 
 # target_sources (none yet)
 
