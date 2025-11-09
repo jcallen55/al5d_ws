@@ -1,6 +1,5 @@
 /*
  * /===--------------------------------------------------------------------===/
- * Author: Jackson Allen
  * Filename: Ssc32uSerial.cpp
  * Description: C++ class definition for the SSC-32U USB connection
  * /===--------------------------------------------------------------------===/
@@ -12,6 +11,15 @@
 #include <cstring>
 #include <sys/select.h>
 #include <errno.h>
+#include <sstream>
+#include <vector>
+
+const std::map<ServoChNum, unsigned int> jointResetPoss = 
+    {
+        {ServoChNum::BASE,1500}, {ServoChNum::SHOULDER,1500}, 
+        {ServoChNum::ELBOW,1500}, {ServoChNum::WRIST,2355}, 
+        {ServoChNum::WRIST_ROTATE,1500}
+    };
 
 Ssc32uSerial::Ssc32uSerial() : fd_(-1), isOpen_(false) {}
 
@@ -70,20 +78,11 @@ bool Ssc32uSerial::configure(int baudRate)
     case 9600:
         speed = B9600;
         break;
-    case 19200:
-        speed = B19200;
-        break;
     case 38400:
         speed = B38400;
         break;
-    case 57600:
-        speed = B57600;
-        break;
     case 115200:
         speed = B115200;
-        break;
-    case 230400:
-        speed = B230400;
         break;
     default:
         lastError_ = "Unsupported baud rate";
@@ -239,7 +238,61 @@ std::string Ssc32uSerial::readLine(int timeoutMs)
     return response;
 }
 
-bool Ssc32uSerial::queryMovementComplete()
+// Sends a single servo command to the SSC-32U with #PS parameters
+bool Ssc32uSerial::moveServo(ServoChNum ch, unsigned int thetadeg, unsigned int speed)
+{
+    double slope = 1.0 * (2500 - 500) / (90 - (-90));
+    unsigned int pulseWidth = 500 + round(slope * (thetadeg - (-90)));
+
+    std::stringstream ss;
+    ss << '#' << static_cast<char>(ch) << " P" << pulseWidth;
+    
+    if (speed > 0) {
+        ss << " S" << speed;
+    }
+
+    std::string cm = ss.str();
+    std::cout << "Servo command: " << cm << "\n";
+    
+    ss << '\r';
+    std::string cmd = ss.str();
+    
+    return writeCommand(cmd);
+}
+
+bool Ssc32uSerial::moveServoTimed(ServoChNum ch, unsigned int pulseWidth, unsigned int timeMs)
+{
+    std::stringstream ss;
+    ss << '#' << static_cast<char>(ch) << " P" << pulseWidth << " T" << timeMs << '\r';
+    std::string cmd = ss.str();
+    std::cout << "Servo command: " << cmd;
+    
+    return writeCommand(cmd);
+}
+
+bool Ssc32uSerial::queryPulseWidth(ServoChNum ch, std::string& response)
+{
+
+    if (!writeCommand("QP" + static_cast<char>(ch)))
+    {
+        return false;
+    }
+
+    std::string resp = readLine(100);
+    if (!resp.empty())
+    {
+        std::cerr << "Response to command 'QUERY PULSEWIDTH' empty.\n";
+        return false;
+    }
+    else
+    {
+        response = resp;
+        std::cout << response << std::endl;
+        return true;
+    }
+}
+
+bool Ssc32uSerial::queryMovementStatus()
 {
     if (!writeCommand("Q"))
     {
@@ -250,7 +303,7 @@ bool Ssc32uSerial::queryMovementComplete()
     return (!response.empty() && response[0] == '.');
 }
 
-std::string Ssc32uSerial::queryVersion()
+std::string Ssc32uSerial::queryFirmwareVersion()
 {
     if (!writeCommand("VER"))
     {
@@ -271,4 +324,43 @@ void Ssc32uSerial::flush()
 std::string Ssc32uSerial::getLastError() const
 {
     return lastError_;
+}
+
+bool Ssc32uSerial::assumeResetPos()
+{
+    std::map<ServoChNum,unsigned int> curJointPoss;
+    std::map<ServoChNum,unsigned int>::iterator it;
+    for (it = curJointPoss.begin(); it != curJointPoss.end(); it++)
+    {
+        std::string resp;
+        this->queryPulseWidth(it->first,resp);
+        it->second = std::stoul(resp,nullptr,10);
+    }
+    
+    // TODO:
+    // Calculate trajectory using reset map
+
+    // Execute movement
+
+    return true;
+}
+
+bool Ssc32uSerial::ssDisplay()
+{
+    if (!writeCommand("SS\r"))
+    {
+        return false;
+    }
+
+    std::string response = readLine(3000);
+    if (!response.empty())
+    {
+        std::cerr << "Response to command 'DISPLAY STARTUP STRING' empty.\n";
+        return false;
+    }
+    else
+    {
+        std::cout << response << std::endl;
+        return true;
+    }
 }

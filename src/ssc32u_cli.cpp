@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <vector>
 #include "Ssc32uSerial.hpp"
-#include "utils.hpp"
+#include <chrono>
+#include <thread>
 
 // MAIN
 int main(int argc, char **argv)
@@ -28,7 +29,7 @@ int main(int argc, char **argv)
       baud = (unsigned)std::stoul(argv[++i]);
       if (std::find(valid_bauds.begin(), valid_bauds.end(), baud) == valid_bauds.end())
       {
-          std::cout << "Non-standard baud rate specified: " << baud << "\n";
+          std::cout << "Non-standard baud rate specified: " << baud << " bps\n";
       }
     }
     else if (a == "--help" || a == "-h")
@@ -38,19 +39,41 @@ int main(int argc, char **argv)
     }
   }
 
-  std::cout << "USB connection configuration specified: " << baud << " on port " << port << " --> Attempting to establish USB connection...\n";
+  std::cout << "USB connection configuration specified: " << baud << " bps @ " << port << "\n--> Attempting to establish USB connection...\n";
 
   Ssc32uSerial serial;
   if (!serial.open(port, baud))
   {
-    std::cerr << "USB connection failed. (" << port << ")\n";
+    std::cerr << "USB connection failed.\n";
     return 1;
   }
   else
   {
     std::cout << "USB connection established.\n";
-    return 0;
   }
+
+  // 
+  // std::string pw;
+  // serial.queryPulseWidth(ServoChNum::END_EFFECTOR, pw);
+  // std::cout << "PulseWidth = " << pw << std::endl;
+
+  // serial.moveServo(ServoChNum::END_EFFECTOR,10);
+  // std::cout << "Sent move command...\n";
+
+  // serial.queryPulseWidth(ServoChNum::END_EFFECTOR, pw);
+  // std::cout << "PulseWidth = " << pw << std::endl;
+  
+  serial.writeCommand("R4");
+  std::cout << serial.readLine(3000) << std::endl;
+
+  if(!serial.ssDisplay())
+  {
+    std::cerr << "Failed to display startup string.\n";
+  }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+  return 0;
 }
 
 // SSC32U ssc(ser);

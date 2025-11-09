@@ -1,8 +1,14 @@
+/*
+ * Filename: Ssc32uSerial.hpp
+ * 
+ * */
+
 #ifndef SSC32U_SERIAL_HPP
 #define SSC32U_SERIAL_HPP
 
 #include <string>
 #include <termios.h>
+#include "utils.hpp"
 
 class Ssc32uSerial {
 public:
@@ -25,12 +31,30 @@ public:
     std::string readLine(int timeoutMs = 1000);
     
     // Query methods for SSC-32U
-    bool queryMovementComplete();
-    std::string queryVersion();
+    bool moveServo(ServoChNum ch, unsigned int pw, unsigned int speed = 0);
+    bool moveServoTimed(ServoChNum ch, unsigned int pw, unsigned int timeMs);
+    bool commandGroup();
+    bool servoPositionOffset();
+    bool cancelOutput();
+    bool discreteOutput();
+    bool byteOutput();
+    bool queryMovementStatus();
+    bool queryPulseWidth(ServoChNum ch, std::string& resp);
+    bool readDigitalInput();
+    bool readAnalogInput();
+    bool readBaudR4();
+    bool stopServo();
+    bool ssDisplay();
+    bool ssDeleteCharacters();
+    bool ssConcatenate();
+    std::string queryFirmwareVersion();
 
     // Utility
     void flush();
     std::string getLastError() const;
+
+    // AL5D
+    bool assumeResetPos();
 
 private:
     int fd_;                    // File descriptor for serial port
