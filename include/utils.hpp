@@ -23,6 +23,16 @@ enum class ServoChNum : char
     END_EFFECTOR = '5' 
 };
 
+const std::map<ServoChNum, unsigned int> jointResetPoss = 
+{
+    {ServoChNum::BASE,1500},
+    {ServoChNum::SHOULDER,1500}, 
+    {ServoChNum::ELBOW,1500},
+    {ServoChNum::WRIST,2355}, 
+    {ServoChNum::WRIST_ROTATE,1500},
+    {ServoChNum::END_EFFECTOR,1500}
+};
+
 inline double round(double d)
 {
     return floor(d + 0.5);

@@ -1,7 +1,7 @@
 /*
  * Author: Jackson Allen
  * Filename: ssc32u_cli.cpp
- * 
+ *
  * */
 
 #include <algorithm>
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
       baud = (unsigned)std::stoul(argv[++i]);
       if (std::find(valid_bauds.begin(), valid_bauds.end(), baud) == valid_bauds.end())
       {
-          std::cout << "Non-standard baud rate specified: " << baud << " bps\n";
+        std::cout << "Non-standard baud rate specified: " << baud << " bps\n";
       }
     }
     else if (a == "--help" || a == "-h")
@@ -52,26 +52,76 @@ int main(int argc, char **argv)
     std::cout << "USB connection established.\n";
   }
 
-  // 
-  // std::string pw;
-  // serial.queryPulseWidth(ServoChNum::END_EFFECTOR, pw);
-  // std::cout << "PulseWidth = " << pw << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
-  // serial.moveServo(ServoChNum::END_EFFECTOR,10);
-  // std::cout << "Sent move command...\n";
+  // std::string line;
+  // while (true)
+  // {
+  //   std::cout << "> " << std::flush;
+  //   if (!std::getline(std::cin, line))
+  //     break;
+  //   line = trim(line);
+  //   if (line.empty())
+  //     continue;
 
-  // serial.queryPulseWidth(ServoChNum::END_EFFECTOR, pw);
-  // std::cout << "PulseWidth = " << pw << std::endl;
-  
-  serial.writeCommand("R4");
-  std::cout << serial.readLine(3000) << std::endl;
+  //   std::istringstream iss(line);
+  //   std::string cmd;
+  //   iss >> cmd;
 
-  if(!serial.ssDisplay())
-  {
-    std::cerr << "Failed to display startup string.\n";
-  }
+  //   if (cmd == "quit" || cmd == "exit")
+  //     break;
+  //   if (cmd == "help")
+  //   {
+  //     printHelp();
+  //     continue;
+  //   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+  // std::cout << "Moving to reset position...\n";
+  // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  // serial.assumeResetPos();
+  // std::cout << "Got past reset position.\n"
+  //           << std::endl;
+  // std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+  // Ssc32uSerial::ServoMove pickUpPos1_0(ServoChNum::BASE, 1500);
+  // Ssc32uSerial::ServoMove pickUpPos1_1(ServoChNum::SHOULDER, 1420);
+  // Ssc32uSerial::ServoMove pickUpPos1_2(ServoChNum::ELBOW, 1780);
+  // Ssc32uSerial::ServoMove pickUpPos1_3(ServoChNum::WRIST, 2010);
+  // Ssc32uSerial::ServoMove pickUpPos1_4(ServoChNum::WRIST_ROTATE, 1500);
+  // Ssc32uSerial::ServoMove pickUpPos1_5(ServoChNum::END_EFFECTOR, 1025);
+  // std::vector<Ssc32uSerial::ServoMove> pickUpPos1 = {pickUpPos1_0, pickUpPos1_1, pickUpPos1_2, pickUpPos1_3, pickUpPos1_4, pickUpPos1_5};
+  // serial.moveServoGroup(pickUpPos1, 0, 3000);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // serial.moveServoPwm(ServoChNum::END_EFFECTOR, 550, 200);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // serial.assumeResetPos(3000);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // Ssc32uSerial::ServoMove pickUpPos2_0(ServoChNum::BASE,1960);
+  // Ssc32uSerial::ServoMove pickUpPos2_1(ServoChNum::SHOULDER,1225);
+  // Ssc32uSerial::ServoMove pickUpPos2_2(ServoChNum::ELBOW,1500);
+  // Ssc32uSerial::ServoMove pickUpPos2_3(ServoChNum::WRIST,2075);
+  // Ssc32uSerial::ServoMove pickUpPos2_4(ServoChNum::WRIST_ROTATE,1935);
+  // std::vector<Ssc32uSerial::ServoMove> pickUpPos2 = {pickUpPos2_0, pickUpPos2_1, pickUpPos2_2, pickUpPos2_3, pickUpPos2_4};
+  // serial.moveServoGroup(pickUpPos2,0,4000);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(8000));
+
+  // serial.moveServoPwm(ServoChNum::END_EFFECTOR,1025,200);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // Ssc32uSerial::ServoMove pickUpPos3_0(ServoChNum::BASE, 1040);
+  // Ssc32uSerial::ServoMove pickUpPos3_1(ServoChNum::SHOULDER, 1225);
+  // Ssc32uSerial::ServoMove pickUpPos3_2(ServoChNum::ELBOW, 1500);
+  // Ssc32uSerial::ServoMove pickUpPos3_3(ServoChNum::WRIST, 2075);
+  // Ssc32uSerial::ServoMove pickUpPos3_4(ServoChNum::WRIST_ROTATE, 1065);
+  // std::vector<Ssc32uSerial::ServoMove> pickUpPos3 = {pickUpPos3_0, pickUpPos3_1, pickUpPos3_2, pickUpPos3_3, pickUpPos3_4};
+  // serial.moveServoGroup(pickUpPos3, 0, 3000);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // serial.moveServoPwm(ServoChNum::END_EFFECTOR, 1025, 200);
+  // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 
   return 0;
 }

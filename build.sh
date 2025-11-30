@@ -1,16 +1,6 @@
 #!/bin/bash
-# build.sh — configure & compile the AL5D SSC-32U CLI with CMake
 # Usage:
-#   ./build.sh                      # Release build (default), uses all CPU cores
-#   ./build.sh -t Debug             # Debug build
-#   ./build.sh -j 4                 # Use 4 compile jobs
-#   ./build.sh -c                   # Clean (delete build/ and bin/) then build
-#   ./build.sh -n                   # Configure only (no compile)
-#
-# Result:
-#   - Build files in ./build/
-#   - Executable copied/symlinked to ./bin/ssc32u_cli
-#   - You can run: ./bin/ssc32u_cli --port /dev/ttyUSB0 --baud 9600
+#   run: ./bin/ssc32u_cli --port /dev/ttyUSB0 --baud 9600
 
 set -euo pipefail
 
@@ -76,5 +66,5 @@ fi
 
 echo "[ok] built ${BIN_DIR}/${EXE_NAME}"
 echo
-echo "Run it like this:"
+echo "Run the program:"
 echo "  ${BIN_DIR}/${EXE_NAME} --port /dev/ttyUSB0 --baud 9600"
