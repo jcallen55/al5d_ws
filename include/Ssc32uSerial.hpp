@@ -53,15 +53,6 @@ public:
     std::string queryFirmwareVersion();
     void printR0(const std::string &response);
 
-    // Group move command - moves multiple servos simultaneously
-    struct ServoMove
-    {
-        ServoChNum channel;
-        unsigned int pulseWidth;
-
-        ServoMove(ServoChNum ch, unsigned int pw) : channel(ch), pulseWidth(pw) {}
-    };
-
     bool moveServoGroup(const std::vector<ServoMove> &moves, unsigned int speed = 0, unsigned int timeMs = 0);
 
     // Utility

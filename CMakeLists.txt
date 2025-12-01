@@ -19,12 +19,20 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+find_package(Eigen3 REQUIRED)
+
+# Create a library for the SSC-32U utilities
+add_library(utils src/utils.cpp)
+target_include_directories(utils PUBLIC ${CMAKE_SOURCE_DIR}/include/)
+target_link_libraries(utils PUBLIC Eigen3::Eigen)
+
 # Create a library for the SSC-32U serial communication
 add_library(ssc32u_serial src/Ssc32uSerial.cpp)
 target_include_directories(ssc32u_serial PUBLIC ${CMAKE_SOURCE_DIR}/include/)
+target_link_libraries(ssc32u_serial PUBLIC utils)
 
 add_executable(ssc32u_cli src/ssc32u_cli.cpp)
-target_link_libraries(ssc32u_cli PRIVATE ssc32u_serial)
+target_link_libraries(ssc32u_cli PRIVATE ssc32u_serial utils)
 
 # target_sources (none yet)
 

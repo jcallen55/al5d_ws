@@ -7,8 +7,44 @@
 #include <algorithm>
 #include <vector>
 #include "Ssc32uSerial.hpp"
+#include "utils.hpp"
 #include <chrono>
 #include <thread>
+
+const Eigen::Matrix4d P_Reset_ {
+  {0.000, 0.000, 1.000, 18.564},
+  {0.000, -1.000, 0.000, 0.300},
+  {1.000, 0.000, 0.000, 0.000},
+  {0.000, 0.000, 0.000, 1.000}
+};
+
+const Eigen::Matrix4d P_1R90_ {
+  {0.0, 1.0, 0.0, -0.3   },
+  {0.0, 0.0, 1.0, 18.5640},
+  {1.0, 0.0, 0.0,  0.0   },
+  {0.0, 0.0, 0.0,  1.0   }
+};
+
+const Eigen::Matrix4d P_1Rneg90_ {
+  {0,      -1.0000,  0,        0.3000},
+  {0,       0,      -1.0000, -18.5640},
+  {1.0000,  0,       0,        0     },
+  {0,       0,       0,        1.0000}
+};
+
+const Eigen::Matrix4d P_1R45_2R45_ {
+  {-0.5000,  sqrt(2)/2, 0.5000,  9.0699},
+  {-0.5000, -sqrt(2)/2, 0.5000,  9.4941},
+  { sqrt(2)/2,  0,      sqrt(2)/2, 13.1267},
+  { 0,       0,      0,       1.0000}
+};
+
+const Eigen::Matrix4d P_2R90_3Rneg90_ {
+  {0,       0,      1.0000, 12.0000},
+  {0,      -1.0000, 0,       0.3000},
+  {1.0000,  0,      0,       6.5640},
+  {0,       0,      0,       1.0000}
+};
 
 // MAIN
 int main(int argc, char **argv)
@@ -53,6 +89,26 @@ int main(int argc, char **argv)
   }
 
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+  std::cout << "For {theta1 = 0deg, theta2 = 0deg, theta3 = 0deg}:\n";
+  calculateJointAngles(P_Reset_);
+  std::cout << std::endl;
+
+  std::cout << "For {theta1 = +90deg, theta2 = 0deg, theta3 = 0deg}:\n";
+  calculateJointAngles(P_1R90_);
+  std::cout << std::endl;
+
+  std::cout << "For {theta1 = -90deg, theta2 = 0deg, theta3 = 0deg}:\n";
+  calculateJointAngles(P_1Rneg90_);
+  std::cout << std::endl;
+
+  std::cout << "For {theta1 = +45deg, theta2 = +45deg, theta3 = 0deg}:\n";
+  calculateJointAngles(P_1R45_2R45_);
+  std::cout << std::endl;
+
+  std::cout << "For {theta1 = 0deg, theta2 = +90deg, theta3 = -90deg}:\n";
+  calculateJointAngles(P_2R90_3Rneg90_);
+  std::cout << std::endl;
 
   // std::string line;
   // while (true)
@@ -122,6 +178,9 @@ int main(int argc, char **argv)
 
   // serial.moveServoPwm(ServoChNum::END_EFFECTOR, 1025, 200);
   // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // std::string resp = serial.sendUsbCommandWriteRead("R0\r",1000);
+  // serial.printR0(resp);
 
   return 0;
 }

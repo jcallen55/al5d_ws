@@ -12,6 +12,18 @@
 #include <cstdint>
 #include <csignal>
 #include <math.h>
+#include <Eigen/Dense>
+#include <algorithm>
+
+#define _USE_MATH_DEFINES
+
+const double epsilon = 0.005;
+
+// Link lengths
+const double l2 = 6.564; // in
+const double l3 = 7.375; // in
+const double l4 = 4.625; // in
+const double d4 = 0.300; // in
 
 enum class ServoChNum : char
 {
@@ -23,7 +35,7 @@ enum class ServoChNum : char
     END_EFFECTOR = '5' 
 };
 
-const std::map<ServoChNum, unsigned int> jointResetPoss = 
+const std::map<ServoChNum, unsigned int> jointResetPoss
 {
     {ServoChNum::BASE,1500},
     {ServoChNum::SHOULDER,1500}, 
@@ -37,6 +49,24 @@ inline double round(double d)
 {
     return floor(d + 0.5);
 }
+
+struct ServoMove
+{
+    ServoChNum channel;
+    unsigned int pulseWidth;
+
+    ServoMove(ServoChNum ch, unsigned int pw) : channel(ch), pulseWidth(pw) {}
+};
+
+struct Noap
+{
+    float x;
+    float y;
+    float z;
+};
+
+bool calculateJointAngles(const Eigen::Matrix4d &Pdes);
+double checkTol(double val);
 
 // // Associates board channel number to function (for convenience when typing commands)
 // static const std::map<std::string, int> AL5D = {

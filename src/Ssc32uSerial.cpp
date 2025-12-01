@@ -360,7 +360,7 @@ bool Ssc32uSerial::moveServoTimed(ServoChNum ch, unsigned int pulseWidth, unsign
     std::string cmd = ss.str();
     std::cout << "Servo command: " << cmd;
 
-    sendUsbCommandWriteOnly(cmd);
+    return sendUsbCommandWriteOnly(cmd);
 }
 
 bool Ssc32uSerial::moveServoGroup(const std::vector<ServoMove> &moves, unsigned int speed, unsigned int timeMs)
@@ -545,7 +545,7 @@ bool Ssc32uSerial::assumeResetPos(unsigned int timeMs)
  * @param response The string response from sendUsbCommandWriteRead("R0\r", timeout)
  *                 Expected format: ASCII decimal number (e.g., "1023" or "12")
  */
-void printR0(const std::string &response)
+void Ssc32uSerial::printR0(const std::string &response)
 {
     // Trim whitespace from response
     std::string trimmed = response;
